@@ -1,22 +1,17 @@
-import { loadReviews } from "../../../helpers";
+import { loadBooks } from "@/app/api/helpers";
 
-// GET /api/reviews/book/:bookId
-interface Params {
-  params: { bookId: string };
-}
+// GET /api/books/[bookId]
+export async function GET(
+  _req: Request,
+  context: { params: Promise<{ bookId: string }> }
+) {
+  const { bookId } = await context.params; // ✅ await params
+  const books = loadBooks();
+  const book = books.find((b: { id: string }) => b.id === bookId);
 
-export async function GET(_: Request, { params }: Params) {
-  const reviews = loadReviews();
-  const bookReviews = reviews.filter(
-    (r: { bookId: string }) => r.bookId === params.bookId
-  );
-
-  if (bookReviews.length > 0) {
-    return Response.json(bookReviews);
+  if (book) {
+    return Response.json(book);
   } else {
-    return Response.json(
-      { message: "No reviews found for this book" },
-      { status: 404 }
-    );
+    return Response.json({ message: "Book not found" }, { status: 404 });
   }
 }

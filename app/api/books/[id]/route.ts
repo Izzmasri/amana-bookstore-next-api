@@ -1,12 +1,11 @@
 import { loadBooks } from "../../helpers";
 
 // GET /api/books/:id
-interface Params {
-  params: { id: string };
-}
-
-export async function GET(_: Request, { params }: Params) {
-  const { id } = params;
+export async function GET(
+  _: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
   const books = loadBooks();
   const book = books.find((b: { id: string }) => b.id === id);
 
